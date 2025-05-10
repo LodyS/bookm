@@ -10,9 +10,17 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return BookResource::collection(Book::with(['authors', 'reviews'])->paginate(10));
+        $query = Book::with(['authors', 'reviews']);
+        
+        if($request->has('title')) {
+            $query->where('title', 'like', '%'. $request->query('title') . '%');
+        }
+        
+        $books = $query->paginate(10);
+
+        return BookResource::collection($books);
     }
 
     /**
